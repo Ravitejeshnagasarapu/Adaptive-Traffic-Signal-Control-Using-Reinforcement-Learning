@@ -10,7 +10,7 @@
 
 ---
 
-## 📖 Description
+## Description
 
 This project implements an **adaptive traffic signal control system** at a four-way intersection using model-free Reinforcement Learning. The problem is formulated as a **Markov Decision Process (MDP)**, where an intelligent agent observes real-time traffic state (queue lengths, wait times, starvation, emergency flags), selects a signal phase (N/E/S/W), and receives a shaped reward that incentivises throughput, minimises waiting time, and prevents lane starvation.
 
@@ -18,7 +18,7 @@ Two tabular RL algorithms — **Q-Learning** (off-policy) and **SARSA** (on-poli
 
 ---
 
-## ✨ Features
+## Features
 
 | Feature | Details |
 |---|---|
@@ -39,7 +39,7 @@ Two tabular RL algorithms — **Q-Learning** (off-policy) and **SARSA** (on-poli
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 | Component | Technology |
 |---|---|
@@ -52,46 +52,45 @@ Two tabular RL algorithms — **Q-Learning** (off-policy) and **SARSA** (on-poli
 
 ---
 
-## 🏗 System Architecture
+## System Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        server.py                            │
-│                                                             │
-│   ┌──────────┐   action    ┌──────────────────────────┐    │
-│   │  Agent   │ ─────────► │     TrafficEnv           │    │
-│   │          │             │  ┌────────────────────┐  │    │
-│   │ Q-Learn  │ ◄─────────  │  │   PhaseManager     │  │    │
-│   │  SARSA   │  state,     │  │  (yellow/all-red/  │  │    │
-│   │ FixedTime│  reward,    │  │   green FSM)       │  │    │
-│   └──────────┘  done,info  │  └────────────────────┘  │    │
-│         │                  └──────────────────────────┘    │
-│         │ learn()                                           │
-│         ▼                                                   │
-│   ┌──────────┐   JSON frame   ┌────────────────────────┐   │
-│   │ Q-Table  │               │   WebSocket Clients    │   │
-│   │ (pickle) │ ─────────────► │   (browser frontend)  │   │
-│   └──────────┘                └────────────────────────┘   │
-│         │                                                   │
-│         ▼                                                   │
-│   ┌──────────────────────────────────────────────────────┐  │
-│   │  MetricsLogger  →  metrics.json  →  Plotter          │  │
-│   │  (reward, wait, queue, throughput, fairness, ε, …)   │  │
-│   └──────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
+ -------------------------------------------------------------
+|                        server.py                            |
+|                                                             |
+|    ----------    action     --------------------------      |
+|   |  Agent   | ---------►  |     TrafficEnv           |     |
+|   |          |             |  ┌--------------------┐  |     |
+|   | Q-Learn  | ◄---------  |  |   PhaseManager     |  |     |
+|   |  SARSA   |  state,     |  |  (yellow/all-red/  |  |     |
+|   | FixedTime|  reward,    |  |   green FSM)       |  |     |
+|    ----------   done,info  |  └--------------------┘  |     |
+|         |                   --------------------------      |
+|         | learn()                                           |
+|         ▼                                                   |
+|    ----------    JSON frame    ------------------------     |
+|   | Q-Table  |                |   WebSocket Clients    |    |
+|   | (pickle) | -------------► |   (browser frontend)   |    |
+|    ----------                  ------------------------     |
+|         |                                                   |
+|         ▼                                                   |
+|    ------------------------------------------------------   |
+|   |  MetricsLogger  →  metrics.json  →  Plotter          |  |
+|   |  (reward, wait, queue, throughput, fairness, ε, …)   |  |
+|    ------------------------------------------------------   |
+ -------------------------------------------------------------
 ```
 
 **Decision flow per step:**
 1. Environment spawns vehicles stochastically (straight: 10%, right-turn: 7%, emergency: 1.2% per direction per step).  
 2. Agent selects action (direction to give green) via ε-greedy or greedy policy.  
-3. `PhaseManager` triggers YELLOW (2 steps) → ALL_RED (2 steps) → GREEN transition.  
-4. Vehicles are cleared during GREEN; wait counters and starvation counters are updated.  
+3. `PhaseManager` triggers YELLOW → ALL_RED → GREEN transition. 
 5. Shaped reward is computed and the agent's Q-values are updated.  
 6. State, reward, and info dict are broadcast over WebSocket.
 
 ---
 
-## 🌍 Environment Design
+## Environment Design
 
 ### State Vector — 17 features
 
@@ -114,7 +113,7 @@ The full 17-feature vector is compressed to a 4-tuple for the Q-table:
 
 ```
 (max_valid_q_dir, max_wait_level, current_phase, emerg)
- └── 0-3           └── 0-3          └── 0-3        └── 0-1
+ └-- 0-3           └-- 0-3          └-- 0-3        └-- 0-1
 ```
 
 `max_valid_q_dir` is the argmax queue **excluding the currently blocked direction** — this prevents the agent from learning Q-values for actions it is forbidden to take by the fairness history constraint.
@@ -158,7 +157,7 @@ reward = clip(raw / 10.0, -1.5, 1.5)
 
 ---
 
-## 🤖 Algorithms
+## Algorithms
 
 ### Q-Learning (Off-Policy TD(0))
 
@@ -168,7 +167,7 @@ Q[s][a] ← Q[s][a] + α × (r + γ × max_{a'} Q[s'] − Q[s][a])
 
 - Learns the **optimal** value function independent of the behaviour policy.  
 - Uses the **greedy** bootstrap target even during ε-greedy exploration.  
-- UCB bonus added at action selection: `Q_aug[s][a] = Q[s][a] + 0.08 / √(visits[s][a] + 1)`  
+- Upper Confidence Bound (UCB) bonus added at action selection: `Q_aug[s][a] = Q[s][a] + 0.08 / √(visits[s][a] + 1)`  
 - Optimistic initialisation: `Q[s][max_valid_q_dir] = 0.15` on first visit.
 
 ### SARSA (On-Policy TD(0))
@@ -179,7 +178,7 @@ Q[s][a] ← Q[s][a] + α × (r + γ × Q[s'][a'] − Q[s][a])
 
 - Updates using the **action actually taken** by the current ε-greedy policy.  
 - `a'` is selected by `_policy()` immediately after learning and cached as `_next_a` so `select_action` returns it on the next call — ensuring true on-policy consistency.  
-- Same UCB bonus and optimistic initialisation as Q-Learning.
+- Same Upper Confidence Bound bonus and optimistic initialisation as Q-Learning.
 
 ### Fixed-Time Baseline
 
@@ -189,49 +188,49 @@ Q[s][a] ← Q[s][a] + α × (r + γ × Q[s'][a'] − Q[s][a])
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 .
-├── server.py               # Main entry point — training loop, WebSocket server, modes
-├── rl_agents.py            # QLearningAgent, SARSAAgent, FixedTimeAgent, make_agent()
-├── traffic_env.py          # TrafficEnv — step(), reset(), state vector, reward
-├── plotter.py              # Plotter, AdvancedPlotter — all matplotlib graphs
-├── scheduler/
-│   └── phase_manager.py    # PhaseManager — FSM, dynamic duration, fairness score
-├── analytics/              # MetricsLogger (referenced in server.py)
-│
-├── models/                 # Saved model checkpoints (auto-created)
-│   ├── qlearning.pkl       # Final Q-Learning model
-│   ├── sarsa.pkl           # Final SARSA model
-│   ├── best_qlearning.pkl  # Best Q-Learning model (by avg wait time)
-│   ├── best_sarsa.pkl      # Best SARSA model
-│   └── interrupted_*.pkl   # Auto-saved on Ctrl-C
-│
-├── outputs/                # Training artefacts (auto-created)
-│   ├── qlearning/
-│   │   ├── metrics.json
-│   │   ├── reward.png
-│   │   ├── wait.png
-│   │   ├── queue.png
-│   │   ├── throughput.png
-│   │   └── dashboard.png
-│   ├── sarsa/              # (same structure)
-│   ├── fixedtime/          # (same structure)
-│   └── compare/
-│       ├── reward_compare.png
-│       ├── wait_compare.png
-│       ├── throughput_compare.png
-│       ├── queue_compare.png
-│       ├── comparison_bar.png
-│       └── comparison_curves.png
-│
-└── index.html              # Browser frontend (connects via WebSocket)
+├-- server.py               # Main entry point — training loop, WebSocket server, modes
+├-- rl_agents.py            # QLearningAgent, SARSAAgent, FixedTimeAgent, make_agent()
+├-- traffic_env.py          # TrafficEnv — step(), reset(), state vector, reward
+├-- plotter.py              # Plotter, AdvancedPlotter — all matplotlib graphs
+├-- scheduler/
+|   └-- phase_manager.py    # PhaseManager — FSM, dynamic duration, fairness score
+├-- analytics/              # MetricsLogger
+|
+├-- models/                 # Saved model checkpoints
+|   ├-- qlearning.pkl       # Final Q-Learning model
+|   ├-- sarsa.pkl           # Final SARSA model
+|   ├-- best_qlearning.pkl  # Best Q-Learning model
+|   ├-- best_sarsa.pkl      # Best SARSA model
+|   └-- interrupted_*.pkl   # Auto-saved on Pressing Ctrl-C
+|
+├-- outputs/                # Training artefacts
+|   ├-- qlearning/
+|   |   ├-- metrics.json
+|   |   ├-- reward.png
+|   |   ├-- wait.png
+|   |   ├-- queue.png
+|   |   ├-- throughput.png
+|   |   └-- dashboard.png
+|   ├-- sarsa/              # (same structure)
+|   ├-- fixedtime/          # (same structure)
+|   └-- compare/
+|       ├-- reward_compare.png
+|       ├-- wait_compare.png
+|       ├-- throughput_compare.png
+|       ├-- queue_compare.png
+|       ├-- comparison_bar.png
+|       └-- comparison_curves.png
+|
+└-- index.html              # Browser frontend (connects via WebSocket)
 ```
 
 ---
 
-## ⚙️ Installation & Setup
+## Installation & Setup
 
 ### Prerequisites
 
@@ -246,7 +245,7 @@ pip install numpy matplotlib websockets
 
 ---
 
-## 🚀 Running the Project
+## Running the Project
 
 ### Training Mode
 
@@ -265,7 +264,7 @@ python server.py --mode train --algo fixedtime --episodes 1200
 
 ### Testing Mode
 
-Evaluate a saved model (loads `models/best_<algo>.pkl` or `models/<algo>.pkl`):
+Evaluate a saved model (loads `Backend/models/best_<algo>.pkl` or `Backend/models/<algo>.pkl`):
 
 ```bash
 python server.py --mode test --algo qlearning --episodes 50 --fps 25.0
@@ -280,7 +279,7 @@ Run all three algorithms sequentially and generate comparison graphs:
 python server.py --mode compare --episodes 1200
 ```
 
-Results and graphs are written to `outputs/compare/`.
+Results and graphs are written to `Backend/outputs/compare/`.
 
 ### Optional flags
 
@@ -301,11 +300,11 @@ Open `http://localhost:5000` in a browser. The page connects to `ws://localhost:
 
 ---
 
-## 📊 Outputs & Metrics
+## Outputs & Metrics
 
 ### `metrics.json` (per algorithm)
 
-Saved to `outputs/<algo>/metrics.json` every 100 episodes and at run end.
+Saved to `Backend/outputs/<algo>/metrics.json` every 100 episodes and at run end.
 
 ```json
 {
@@ -341,7 +340,7 @@ Saved to `outputs/<algo>/metrics.json` every 100 episodes and at run end.
 
 ---
 
-## 🎛 Hyperparameters
+## Hyperparameters
 
 | Parameter | Value | Description |
 |---|---|---|
@@ -367,7 +366,7 @@ Saved to `outputs/<algo>/metrics.json` every 100 episodes and at run end.
 
 ---
 
-## 📈 Evaluation Metrics
+## Evaluation Metrics
 
 Models are evaluated on four primary metrics recorded at the end of every episode:
 
@@ -380,19 +379,17 @@ Models are evaluated on four primary metrics recorded at the end of every episod
 | **Fairness Score** | ↑ closer to 1 is better | `max(0, 1 − CV)` of per-direction phase counts |
 | **Preference Rate** (%) | — | % of decisions that matched the highest-queue non-blocked direction |
 
-**Best model saving:** A new checkpoint (`models/best_<algo>.pkl`) is written only when the 20-episode smoothed wait time improves by ≥ 0.5 s, preventing noisy saves.
+**Best model saving:** A new checkpoint (`Backend/models/best_<algo>.pkl`) is written only when the 20-episode smoothed wait time improves by ≥ 0.5 s, preventing noisy saves.
 
 ---
 
-## 🖼 Results Summary
+## Results Summary
 
 | Algorithm | Avg Reward | Avg Wait Time | Avg Throughput | Stability |
 |---|---|---|---|---|
 | Fixed-Time | -124.75 | 43.78 s | 100–120 veh/ep | Low |
 | Q-Learning | -108.11 | 38.83 s | 90–120 veh/ep | Medium |
 | **SARSA** | **-104.26** | **33.73 s** | **100–135 veh/ep** | **High** |
-
-*Values from the project report (1200 training episodes, final 20-episode averages).*
 
 **Key findings:**
 - Both RL methods significantly outperform Fixed-Time control.
@@ -402,18 +399,18 @@ Models are evaluated on four primary metrics recorded at the end of every episod
 
 ---
 
-## 🖼 Visual Outputs
+## Visual Outputs
 
 | Dashboard | Description |
 |---|---|
-| ![SARSA Dashboard](outputs/sarsa/dashboard.png) | SARSA training summary — reward, wait, queue, ε |
-| ![Q-Learning Dashboard](outputs/qlearning/dashboard.png) | Q-Learning training summary |
-| ![Comparison Bar](outputs/compare/comparison_bar.png) | Side-by-side wait time and throughput |
-| ![Comparison Curves](outputs/compare/comparison_curves.png) | Smoothed training curves — all algorithms |
+| ![SARSA Dashboard](Backend/outputs/sarsa/dashboard.png) | SARSA training summary — reward, wait, queue, ε |
+| ![Q-Learning Dashboard](Backend/outputs/qlearning/dashboard.png) | Q-Learning training summary |
+| ![Comparison Bar](Backend/outputs/compare/comparison_bar.png) | Side-by-side wait time and throughput |
+| ![Comparison Curves](Backend/outputs/compare/comparison_curves.png) | Smoothed training curves — all algorithms |
 
 ---
 
-## 🔮 Future Improvements
+## Future Improvements
 
 - **Multi-intersection coordination** — extend the MDP to a network of intersections with shared state.
 - **Deep Q-Network (DQN)** — replace the 128-state tabular Q-table with a neural network to handle continuous, high-dimensional state spaces.
@@ -425,7 +422,7 @@ Models are evaluated on four primary metrics recorded at the end of every episod
 
 ---
 
-## 👥 Project Team
+## Project Team
 
 | Name | Roll Number |
 |---|---|
@@ -439,7 +436,7 @@ Models are evaluated on four primary metrics recorded at the end of every episod
 
 ---
 
-## 📄 Reference
+## Reference
 
 > - [Traffic Signal Control based on Markov Decision Process](https://www.sciencedirect.com/science/article/pii/S2405896316302075)
 
