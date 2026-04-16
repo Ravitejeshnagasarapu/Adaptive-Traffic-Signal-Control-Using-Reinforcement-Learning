@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="favicon.png">
+  <title>ATSC-RL</title>
+  <meta name="description" content="Reinforcement Learning-based adaptive traffic signal controller for a 4-way using Q-Learning, SARSA, and DQN.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🚦 Adaptive Traffic Signal Control Using Reinforcement Learning</h1>
+    
+    <div class="simulation-wrapper">
+      <canvas id="simCanvas" width="800" height="800"></canvas>
+      
+      <div class="stats">
+        <div class="stats-header">LIVE TRAFFIC</div>
+        <div id="stat-N">N: 0 (E: 0)</div>
+        <div id="stat-E">E: 0 (E: 0)</div>
+        <div id="stat-S">S: 0 (E: 0)</div>
+        <div id="stat-W">W: 0 (E: 0)</div>
+      </div>
+
+      <div class="rl-stats">
+        <div class="stats-header">RL METRICS</div>
+
+        <div id="metric-connection" style="color:#eab308; font-size:11px;">⏳ Waiting for backend...</div>
+        <div id="metric-episode" style="font-weight:bold; color:#60a5fa;">Episode: - / -</div>
+
+        <div class="divider"></div>
+
+        <div id="metric-algo">Algorithm: -</div>
+        <div id="metric-epsilon">Epsilon: -</div>
+        <div id="metric-reward">Reward: -</div>
+
+        <div class="divider"></div>
+
+        <div id="metric-wait">Avg Wait Time: -</div>
+        <div id="metric-queue">Queue Length: -</div>
+        <div id="metric-throughput">Throughput: -</div>
+
+        <div class="divider"></div>
+
+        <div id="metric-phase">Current Phase: -</div>
+        <div id="metric-timer">Phase Time: -</div>
+      </div>
+
+      <div class="graph-panel">
+        <div class="stats-header">TRAINING GRAPHS</div>
+
+        <div style="font-size:11px; margin-top: 8px; color: #ccc;">Reward vs Episode</div>
+        <canvas id="rewardChart" width="200" height="120"></canvas>
+
+        <div style="font-size:11px; margin-top: 8px; color: #ccc;">Wait Time vs Episode</div>
+        <canvas id="waitChart" width="200" height="120"></canvas>
+      </div>
+
+      <!-- Comparison Results Table -->
+      <div class="comparison-panel" style="right: -15px;">
+        <div class="stats-header">ALGORITHM COMPARISON</div>
+        <div id="comparison-table">
+          <div style="color:#888; font-size:11px;">Run <code style="color:#60a5fa;">--mode compare</code> to see results</div>
+        </div>
+      </div>
+
+      <div id="signal-N" class="signal signal-n">
+        <div class="light red active"></div>
+        <div class="light yellow"></div>
+        <div class="light green"></div>
+      </div>
+      <div id="signal-E" class="signal signal-e">
+        <div class="light red active"></div>
+        <div class="light yellow"></div>
+        <div class="light green"></div>
+      </div>
+      <div id="signal-S" class="signal signal-s">
+        <div class="light red active"></div>
+        <div class="light yellow"></div>
+        <div class="light green"></div>
+      </div>
+      <div id="signal-W" class="signal signal-w">
+        <div class="light red active"></div>
+        <div class="light yellow"></div>
+        <div class="light green"></div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="script.js"></script>
+</body>
+</html>
