@@ -1,0 +1,192 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #1a1a1a;
+  color: white;
+  font-family: monospace;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.container {
+  background-color: #262626;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  border: 1px solid #404040;
+}
+
+h1 {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-family: sans-serif;
+  letter-spacing: -0.5px;
+}
+
+.simulation-wrapper {
+  position: relative;
+  width: 800px;
+  height: 950px;
+  background-color: #171717;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.stats {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #404040;
+  backdrop-filter: blur(4px);
+  z-index: 10;
+}
+
+.stats-header {
+  font-weight: bold;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #555;
+  padding-bottom: 4px;
+  color: #ccc;
+}
+
+.rl-stats {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background-color: rgba(0, 0, 0, 0.85);
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #404040;
+  backdrop-filter: blur(6px);
+  z-index: 10;
+  width: 220px;
+  font-size: 13px;
+}
+
+.rl-stats div {
+  margin: 4px 0;
+}
+
+.divider {
+  height: 1px;
+  background: #444;
+  margin: 8px 0;
+}
+
+.graph-panel {
+  position: absolute;
+  top: 560px;
+  left: 16px;
+  background: rgba(0,0,0,0.85);
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #404040;
+  width: 240px;
+  z-index: 10;
+}
+
+.graph-panel canvas {
+  background: #111;
+  margin-top: 4px;
+  border-radius: 6px;
+  width: 100%;
+}
+
+/* Comparison Results Panel */
+.comparison-panel {
+  position: absolute;
+  bottom: 16px;
+  background: rgba(0, 0, 0, 0.85);
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #404040;
+  backdrop-filter: blur(6px);
+  width: 310px;
+  z-index: 10;
+  font-size: 12px;
+}
+
+.comparison-panel table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.comparison-panel th,
+.comparison-panel td {
+  padding: 4px 6px;
+  text-align: left;
+}
+
+.comparison-panel thead tr {
+  border-bottom: 1px solid #555;
+}
+
+.comparison-panel tbody tr {
+  border-bottom: 1px solid #333;
+}
+
+.signal {
+  position: absolute;
+  background: black;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #404040;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 10;
+  width: 14px;
+}
+
+.signal-n {
+  position: absolute;
+  top: 330px;
+  left: 480px;
+}
+
+.signal-s {
+  position: absolute;
+  top: 560px;
+  left: 290px;
+}
+
+.signal-e {
+  position: absolute;
+  top: 330px;
+  left: 290px;
+}
+
+.signal-w {
+  position: absolute;
+  top: 560px;
+  left: 480px;
+}
+
+.light {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  opacity: 0.3;
+  transition: all 0.2s;
+  margin: 0 auto;
+}
+
+.light.red { background-color: #7f1d1d; }
+.light.yellow { background-color: #713f12; }
+.light.green { background-color: #14532d; }
+
+.light.red.active { background-color: #ef4444; opacity: 1; box-shadow: 0 0 10px #ef4444; }
+.light.yellow.active { background-color: #eab308; opacity: 1; box-shadow: 0 0 10px #eab308; }
+.light.green.active { background-color: #22c55e; opacity: 1; box-shadow: 0 0 10px #22c55e; }
