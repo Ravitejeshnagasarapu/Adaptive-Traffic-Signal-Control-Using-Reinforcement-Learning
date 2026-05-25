@@ -1,4 +1,4 @@
-# 🚦 Adaptive Traffic Signal Control Using Reinforcement Learning
+# Adaptive Traffic Signal Control Using Reinforcement Learning
 
 [![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)](https://www.python.org/)
 [![NumPy](https://img.shields.io/badge/NumPy-1.x-013243?logo=numpy)](https://numpy.org/)
@@ -10,7 +10,7 @@
 
 ---
 
-## 📖 Description
+## Description
 
 This project implements an **adaptive traffic signal control system** at a four-way intersection using model-free Reinforcement Learning. The problem is formulated as a **Markov Decision Process (MDP)**, where an intelligent agent observes real-time traffic state (queue lengths, wait times, starvation, emergency flags), selects a signal phase (N/E/S/W), and receives a shaped reward that incentivises throughput, minimises waiting time, and prevents lane starvation.
 
@@ -18,7 +18,7 @@ Two tabular RL algorithms — **Q-Learning** (off-policy) and **SARSA** (on-poli
 
 ---
 
-## ✨ Features
+## Features
 
 | Feature | Details |
 |---|---|
@@ -39,7 +39,7 @@ Two tabular RL algorithms — **Q-Learning** (off-policy) and **SARSA** (on-poli
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 | Component | Technology |
 |---|---|
@@ -52,26 +52,26 @@ Two tabular RL algorithms — **Q-Learning** (off-policy) and **SARSA** (on-poli
 
 ---
 
-## 🏗 System Architecture
+## System Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                        server.py                            │
 │                                                             │
-│   ┌──────────┐   action    ┌──────────────────────────┐    │
-│   │  Agent   │ ─────────► │     TrafficEnv           │    │
-│   │          │             │  ┌────────────────────┐  │    │
-│   │ Q-Learn  │ ◄─────────  │  │   PhaseManager     │  │    │
-│   │  SARSA   │  state,     │  │  (yellow/all-red/  │  │    │
-│   │ FixedTime│  reward,    │  │   green FSM)       │  │    │
-│   └──────────┘  done,info  │  └────────────────────┘  │    │
-│         │                  └──────────────────────────┘    │
+│   ┌──────────┐   action    ┌──────────────────────────┐     │
+│   │  Agent   │ ─────────►  │     TrafficEnv           │     │
+│   │          │             │  ┌────────────────────┐  │     │
+│   │ Q-Learn  │ ◄─────────  │  │   PhaseManager     │  │     │
+│   │  SARSA   │  state,     │  │  (yellow/all-red/  │  │     │
+│   │ FixedTime│  reward,    │  │   green FSM)       │  │     │
+│   └──────────┘  done,info  │  └────────────────────┘  │     │
+│         │                  └──────────────────────────┘     │
 │         │ learn()                                           │
 │         ▼                                                   │
-│   ┌──────────┐   JSON frame   ┌────────────────────────┐   │
-│   │ Q-Table  │               │   WebSocket Clients    │   │
-│   │ (pickle) │ ─────────────► │   (browser frontend)  │   │
-│   └──────────┘                └────────────────────────┘   │
+│   ┌──────────┐   JSON frame   ┌────────────────────────┐    │
+│   │ Q-Table  │                │   WebSocket Clients    │    │
+│   │ (pickle) │ ─────────────► │   (browser frontend)   │    │
+│   └──────────┘                └────────────────────────┘    │
 │         │                                                   │
 │         ▼                                                   │
 │   ┌──────────────────────────────────────────────────────┐  │
@@ -91,7 +91,7 @@ Two tabular RL algorithms — **Q-Learning** (off-policy) and **SARSA** (on-poli
 
 ---
 
-## 🌍 Environment Design
+## Environment Design
 
 ### State Vector — 17 features
 
@@ -158,7 +158,7 @@ reward = clip(raw / 10.0, -1.5, 1.5)
 
 ---
 
-## 🤖 Algorithms
+## Algorithms
 
 ### Q-Learning (Off-Policy TD(0))
 
@@ -189,7 +189,7 @@ Q[s][a] ← Q[s][a] + α × (r + γ × Q[s'][a'] − Q[s][a])
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 .
@@ -231,7 +231,7 @@ Q[s][a] ← Q[s][a] + α × (r + γ × Q[s'][a'] − Q[s][a])
 
 ---
 
-## ⚙️ Installation & Setup
+## Installation & Setup
 
 ### Prerequisites
 
@@ -246,7 +246,7 @@ pip install numpy matplotlib websockets
 
 ---
 
-## 🚀 Running the Project
+## Running the Project
 
 ### Training Mode
 
@@ -301,7 +301,7 @@ Open `http://localhost:5000` in a browser. The page connects to `ws://localhost:
 
 ---
 
-## 📊 Outputs & Metrics
+## Outputs & Metrics
 
 ### `metrics.json` (per algorithm)
 
@@ -341,7 +341,7 @@ Saved to `outputs/<algo>/metrics.json` every 100 episodes and at run end.
 
 ---
 
-## 🎛 Hyperparameters
+## Hyperparameters
 
 | Parameter | Value | Description |
 |---|---|---|
@@ -367,7 +367,7 @@ Saved to `outputs/<algo>/metrics.json` every 100 episodes and at run end.
 
 ---
 
-## 📈 Evaluation Metrics
+## Evaluation Metrics
 
 Models are evaluated on four primary metrics recorded at the end of every episode:
 
@@ -384,7 +384,7 @@ Models are evaluated on four primary metrics recorded at the end of every episod
 
 ---
 
-## 🖼 Results Summary
+## Results Summary
 
 | Algorithm | Avg Reward | Avg Wait Time | Avg Throughput | Stability |
 |---|---|---|---|---|
@@ -402,18 +402,7 @@ Models are evaluated on four primary metrics recorded at the end of every episod
 
 ---
 
-## 🖼 Visual Outputs
-
-| Dashboard | Description |
-|---|---|
-| ![SARSA Dashboard](outputs/sarsa/dashboard.png) | SARSA training summary — reward, wait, queue, ε |
-| ![Q-Learning Dashboard](outputs/qlearning/dashboard.png) | Q-Learning training summary |
-| ![Comparison Bar](outputs/compare/comparison_bar.png) | Side-by-side wait time and throughput |
-| ![Comparison Curves](outputs/compare/comparison_curves.png) | Smoothed training curves — all algorithms |
-
----
-
-## 🔮 Future Improvements
+## Future Improvements
 
 - **Multi-intersection coordination** — extend the MDP to a network of intersections with shared state.
 - **Deep Q-Network (DQN)** — replace the 128-state tabular Q-table with a neural network to handle continuous, high-dimensional state spaces.
@@ -425,7 +414,7 @@ Models are evaluated on four primary metrics recorded at the end of every episod
 
 ---
 
-## 👥 Project Team
+## Project Team
 
 | Name | Roll Number |
 |---|---|
@@ -439,7 +428,7 @@ Models are evaluated on four primary metrics recorded at the end of every episod
 
 ---
 
-## 📄 Reference
+## Reference
 
 > - [Traffic Signal Control based on Markov Decision Process](https://www.sciencedirect.com/science/article/pii/S2405896316302075)
 
